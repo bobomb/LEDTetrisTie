@@ -35,6 +35,8 @@ RGB LEDS data is on pin 1
 #define RIGHT  2
 #define LEFT  3
 #define brick_count 7
+#define TRUE 1
+#define FALSE 0
 
 //Display Settings
 #define    field_width 4
@@ -246,10 +248,49 @@ void play(){
 byte getCommand(){
   
   //AI code to go here shortly
-  unsigned short  last_key = 0;
-
-  last_key=random(0,100);
-  last_key%=4;
+    unsigned short  last_key = 0;
+  
+  //First thought, find lowest open column and move piece to it
+  
+  boolean slots[field_width];
+  byte goal=0;
+  boolean last=TRUE;
+  
+  
+  if (current_brick.position_y>3){
+	  for( byte k = 0; k < field_width; k++ )
+		slots[k]=TRUE;
+	  
+	  for( byte i = 0; i < field_height; i++ )
+	  {
+		for( byte k = 0; k < field_width; k++ )
+		{
+		  if( wall[k][i] != 0){
+			  slots[k]=FALSE;
+			  
+			  //scan to see if this is the last FALSE
+			  for( byte j = 0; j < field_width; j++ ){
+					if(slots[j]==TRUE)
+						last=FALSE;
+					}
+				
+			  if(last==FALSE) last==TRUE;
+			  else goal=k;
+			 }
+		}
+	  }
+	  
+	  if (current_brick.position_x==goal)
+		last_key=DOWN;
+	  else if (current_brick.position_x<goal)
+		last_key=RIGHT;
+	  else
+		last_key=LEFT;
+	}
+  else
+	last_key=DOWN;
+  //last_key=random(0,100);
+  //last_key%=4;
   
   return (byte)last_key;
 
